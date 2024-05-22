@@ -8,7 +8,7 @@
             <div class="col-8  offset-2">
                 <div class="mb-3">
                     <label for="title" class="form-label">Title</label>
-                    <input type="text" name="listing[title]" value="<%= newlist1.title  %>" required class="form-control" >
+                    <input type="text" name="listing[title]" value="<%= newlist1.title  %>"  class="form-control" >
                     <div class="invalid-feedback">
                         Please enter a title.
                       </div>
@@ -17,7 +17,7 @@
                
                 <div class="mb-3">
                     <label for="description" class="form-label">Description</label>
-                    <textarea type="text" name="listing[description]"  class="form-control"  required>  <%= newlist1.description %> </textarea>
+                    <textarea type="text" name="listing[description]"  class="form-control"  >  <%= newlist1.description %> </textarea>
                      <div class="invalid-feedback">
                     Please enter the short discrition.
                   </div>
@@ -33,14 +33,14 @@
                <div class="row">
                 <div class="mb-3 col-md-4">
                     <label for="price" class="form-label">Price</label>
-                    <input type="number" name="listing[price]" value="<%= newlist1.price %>" required class="form-control">
+                    <input type="number" name="listing[price]" value="<%= newlist1.price %>"  class="form-control">
                     <div class="invalid-feedback">
                         Price should be valid.
                       </div>
                 </div>
                 <div class="mb-3  col-md-8">
                    <label for="country" class="form-label">Country</label>
-                   <input type="text"name="listing[country]" value="<%= newlist1.country %>"  required class="form-control">
+                   <input type="text"name="listing[country]" value="<%= newlist1.country %>"   class="form-control">
                    <div class="invalid-feedback">
                     country name should be valid.
                   </div>
@@ -50,7 +50,7 @@
                 
                 <div class="mb-3">
                     <label for="location" class="form-label">Location</label>
-                    <input type="text" name="listing[location]"value="<%= newlist1.location %>" required class="form-control">
+                    <input type="text" name="listing[location]"value="<%= newlist1.location %>"  class="form-control">
                     <div class="invalid-feedback">
                         location should be valid.
                        </div>

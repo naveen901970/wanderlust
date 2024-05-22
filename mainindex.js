@@ -11,6 +11,7 @@ app.use(methodOverride('_method'))
 const ejsMeta = require('ejs-mate');
 const wrapasycn=require("./utils/wrapasync");
 const Expresserror=require("./utils/expresserrors")
+const {listingschem}=require("./schema.js");
 
 
 app.set("view engine","ejs");
@@ -75,9 +76,11 @@ app.post("/listings", wrapasycn(async(req,res,next)=>{
  }))
  
  app.put("/listing/:id/", wrapasycn(async(req,res)=>{
-    if(!req.body.listing){
-        throw new Expresserror(400,"send  a valid data for listing ");
-    }
+   let result=listingschem.validate(req.body);
+   if(result.error){
+    throw new Expresserror(401,result.error);
+   }
+   console.log(result);
     let {id}=req.params;
     await lists.findByIdAndUpdate(id,{...req.body.listing});
 
@@ -96,12 +99,17 @@ app.all("*",(req,res,next)=>{
     next(new Expresserror (401,"page was not found"))
 })
 
- app.use((err,req,res,next)=>{
-   let {StatusCode,message}=err
-   res.status(StatusCode) .render("listing/error.ejs",{message})
-//    res.status(statusCode).send(message);
- })
+//  app.use((err,req,res,next)=>{
+//    let {StatusCode,message}=err
+//    res.status(StatusCode) .render("listing/error.ejs",{message})
+// //    res.status(statusCode).send(message);
+//  })
 
+ app.use((err,req,res,next)=>{
+    let {StatusCode=500,message="some error"}=err
+    res.status(StatusCode) .render("listing/error.ejs",{message})
+ //    res.status(statusCode).send(message);
+  })
 
 
 
