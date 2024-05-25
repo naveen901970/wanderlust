@@ -31,6 +31,20 @@ async function main() {
  
 }
 
+const validatelisting=(req,res,next)=>{
+    let {error}=listingschem.validate(req.body);
+    if(error){
+        let errmsg=error.details.map((el)=>el.message).join(",");
+        throw new Expresserror(400,errmsg);
+    }else{
+        next()
+    }
+}
+// let result=listingschem.validate(req.body);
+// if(result.error){
+//  throw new Expresserror(401,result.error);
+// }
+// console.log(result);
 //main route
 app.get("/listings",  wrapasycn(async(req,res)=>{
     let newlist= await lists.find();
@@ -75,12 +89,8 @@ app.post("/listings", wrapasycn(async(req,res,next)=>{
     res.render("./listing/edit.ejs",{newlist1})
  }))
  
- app.put("/listing/:id/", wrapasycn(async(req,res)=>{
-   let result=listingschem.validate(req.body);
-   if(result.error){
-    throw new Expresserror(401,result.error);
-   }
-   console.log(result);
+ app.put("/listing/:id/",validatelisting, wrapasycn(async(req,res)=>{
+  
     let {id}=req.params;
     await lists.findByIdAndUpdate(id,{...req.body.listing});
 
