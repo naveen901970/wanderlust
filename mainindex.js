@@ -1,22 +1,25 @@
-
+///------------------------============NMP PACKAGES=======--------------------------------
 const express=require("express");
 const app=express();
 const path= require("path")
 const port=9008;
 const mongoose = require('mongoose');
-const lists=require("./model/schema");
 var methodOverride = require('method-override');
-app.use(methodOverride('_method'))
-
 const ejsMeta = require('ejs-mate');
+
+//--------------------------------------------------------------------------------
+// ======RERUIRED FROM OTHER FILES=====
+app.use(methodOverride('_method'))
+const lists=require("./model/schema");
 const wrapasycn=require("./utils/wrapasync");
 const Expresserror=require("./utils/expresserrors")
 const {listingschem}=require("./schema.js");
+const review=require("./model/review.js");
 
-
+// ------------------------------------------------------------------------------------
+//=====PATH AND CONNECTION SETUP====
 app.set("view engine","ejs");
 app.set("views",path.join(__dirname,"/views"))
-
 app.use(express.urlencoded({extended:true}));
 app.engine('ejs', ejsMeta);
 app.use(express.static(path.join(__dirname,"public")))
@@ -30,6 +33,7 @@ async function main() {
   await mongoose.connect('mongodb://127.0.0.1:27017/airbin');
  
 }
+//==========================================================================================
 
 const validatelisting=(req,res,next)=>{
     let {error}=listingschem.validate(req.body);
@@ -40,6 +44,7 @@ const validatelisting=(req,res,next)=>{
         next()
     }
 }
+// -----------------------------------------------------------------------------------------------
 // let result=listingschem.validate(req.body);
 // if(result.error){
 //  throw new Expresserror(401,result.error);
@@ -105,30 +110,59 @@ app.post("/listings", wrapasycn(async(req,res,next)=>{
      res.redirect("/listings");
  }));
 
-app.all("*",(req,res,next)=>{
-    next(new Expresserror (401,"page was not found"))
-})
 
+ 
 //  app.use((err,req,res,next)=>{
 //    let {StatusCode,message}=err
 //    res.status(StatusCode) .render("listing/error.ejs",{message})
 // //    res.status(statusCode).send(message);
 //  })
 
- app.use((err,req,res,next)=>{
+ 
+// ================================================================
+//======= REVIEWS======
+
+app.post("/listings/:id/review",async(req,res)=>{
+    let listing=await lists.findById(req.params.id);
+    let newreview=new review(req.body.review);
+
+
+    await listing.reviews.push(newreview);
+
+    await newreview.save();
+    await listing.save();
+
+     res.send("i'ts working")
+
+    })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//===========================================================================================
+//--------------------============EORROR HANDELER============-------------------------------
+app.all("*",(req,res,next)=>{
+    next(new Expresserror (401,"page was not found"))
+})
+
+
+app.use((err,req,res,next)=>{
     let {StatusCode=500,message="some error"}=err
     res.status(StatusCode) .render("listing/error.ejs",{message})
  //    res.status(statusCode).send(message);
   })
-
-
-
-
-
-
-
-
-
 
 
 
