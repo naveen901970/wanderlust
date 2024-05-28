@@ -57,7 +57,7 @@ font-size: 1.5rem;
     flex-wrap: wrap;
 }
 /* CARDS */
-.card {
+.listing-card {
     border: none  !important;
     margin-bottom: 2rem;
 }
