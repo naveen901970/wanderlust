@@ -13,7 +13,7 @@ app.use(methodOverride('_method'))
 // const lists=require("./model/schema");
 // const wrapasycn=require("./utils/wrapasync");
 const Expresserror=require("./utils/expresserrors")
-// const {listingschem,reviewSchema}=require("./schema.js");
+const {listingschem,reviewSchema}=require("./schema.js");
 // const review=require("./model/review.js");
 
 const listings=require("./routes/listing.js");

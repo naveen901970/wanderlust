@@ -1,10 +1,10 @@
 const express=require("express");
-const router=express.Router();
+const router=express.Router({mergeParams:true});
 const lists=require("../model/schema");
 const wrapasycn=require("../utils/wrapasync");
 const Expresserror=require("../utils/expresserrors");
 const review=require("../model/review.js");
-
+const {listingschem,reviewSchema}=require("../schema.js");
 
 
 
