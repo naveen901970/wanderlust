@@ -41,9 +41,10 @@ router.post("/",validatereview,wrapasycn(async(req,res)=>{
     // await listing.reviews.push(newreview);
      await newlisting.reviews.push(newreview);
     
-
+  
     await newreview.save();
     await newlisting.save();
+    req.flash("success","New review Added!");
 
    
    res.redirect(`/listings/${newlisting._id}`);
@@ -58,7 +59,7 @@ router.post("/:rid",wrapasycn(async(req,res)=>{
 
     await lists.findByIdAndUpdate(id,{$pull:{reviews:rid}});
     await review.findByIdAndDelete(rid);
-     
+    req.flash("success","reviews Deleted!");
    res.redirect(`/listings/${id}`);
 }))
 

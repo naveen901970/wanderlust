@@ -30,7 +30,7 @@ const listingschema= new Schema({
 
 
 listingschema.post("findOneAndDelete",async(lists)=>{
-    if(lists){
+    if(lists.reviews.length){
         await review.deleteMany({_id:{$in:lists.reviews}})
     }
 })
