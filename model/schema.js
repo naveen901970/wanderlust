@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const {Schema}=mongoose;
 const review=require("./review.js");
+const User=require("./user.js")
 
 
 const listingschema= new Schema({
@@ -21,11 +22,23 @@ const listingschema= new Schema({
         },
         location:String,
         country:String,
-        reviews:[{
-            type:Schema.Types.ObjectId,
-            ref:"review"
+    //     reviews:[{
+    //         type:Schema.Types.ObjectId,
+    //         ref:"review"
+    //     }
+        
+    // ],
+    reviews: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "review"
         }
-    ]
+    ],
+    author:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User"
+    }
+    
 });
 
 

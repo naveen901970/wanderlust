@@ -4,22 +4,24 @@ const lists=require("../model/schema");
 const wrapasycn=require("../utils/wrapasync");
 const Expresserror=require("../utils/expresserrors");
 const review=require("../model/review.js");
-const {listingschem,reviewSchema}=require("../schema.js");
+// const {listingschem,reviewSchema}=require("../schema.js");
+const {isLoggedin,redirectUrl,isowner, validatelisting,validatereview}=require("../maddleware.js");
 
 
 
 
 
 
-const validatereview=(req,res,next)=>{
-    let {error}=reviewSchema.validate(req.body);
-    if(error){
-        let errmsg=error.details.map((el)=>el.message).join(",");
-        throw new Expresserror(400,errmsg);
-    }else{
-        next()
-    }
-}
+
+// const validatereview=(req,res,next)=>{
+//     let {error}=reviewSchema.validate(req.body);
+//     if(error){
+//         let errmsg=error.details.map((el)=>el.message).join(",");
+//         throw new Expresserror(400,errmsg);
+//     }else{
+//         next()
+//     }
+// }
 
 
 

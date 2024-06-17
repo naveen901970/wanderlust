@@ -3,22 +3,24 @@ const router=express.Router();
 const lists=require("../model/schema.js");
 const wrapasycn=require("../utils/wrapasync");
 const Expresserror=require("../utils/expresserrors")
-const {listingschem,reviewSchema}=require("../schema.js");
+// const {listingschem,reviewSchema}=require("../schema.js");
+
+const {isLoggedin,redirectUrl,isowner, validatelisting}=require("../maddleware.js");
 
 
 
 
 
 
-const validatelisting=(req,res,next)=>{
-    let {error}=listingschem.validate(req.body);
-    if(error){
-        let errmsg=error.details.map((el)=>el.message).join(",");
-        throw new Expresserror(400,errmsg);
-    }else{
-        next()
-    }
-}
+// const validatelisting=(req,res,next)=>{
+//     let {error}=listingschem.validate(req.body);
+//     if(error){
+//         let errmsg=error.details.map((el)=>el.message).join(",");
+//         throw new Expresserror(400,errmsg);
+//     }else{
+//         next()
+//     }
+// }
 
 
 
@@ -37,7 +39,7 @@ router.get("/",  wrapasycn(async(req,res)=>{
 
 
 //create route
-router.get("/new", (req,res)=>{
+router.get("/new", isLoggedin,(req,res)=>{
     console.log("this is working");
     res.render("./listing/create.ejs")
 });
@@ -47,13 +49,14 @@ router.get("/new", (req,res)=>{
 router.get("/:id", wrapasycn(async(req,res)=>{
     
     let {id}=req.params;
-    let newlist1= await lists.findById(id).populate("reviews");
+    let newlist1= await lists.findById(id).populate("reviews").populate("owner");
+    console.log(newlist1);
     if(!newlist1){
         req.flash("error","listing you reqested for does not exit!");
         res.redirect("/listings");
     }
 
-    res.render("./listing/show.ejs",{newlist1})
+    res.render("./listing/show.ejs",{newlist1});
 }));
 
 
@@ -63,6 +66,7 @@ router.post("/", wrapasycn(async(req,res,next)=>{
        throw new Expresserror(400,"send  a valid data  for listing")
     }
    let newlisting= new lists(req.body.listing);
+   newlisting.owner=req.user._id;
       await newlisting.save();
       req.flash("success","New list created!");
    
@@ -76,7 +80,7 @@ router.post("/", wrapasycn(async(req,res,next)=>{
 
 
 //editing route
-router.get("/:id/edit", wrapasycn(async (req,res)=>{
+router.get("/:id/edit",isLoggedin, wrapasycn(async (req,res)=>{
    let {id}=req.params;
    let newlist1= await lists.findById(id)
    if(!newlist1){
@@ -86,9 +90,10 @@ router.get("/:id/edit", wrapasycn(async (req,res)=>{
    res.render("./listing/edit.ejs",{newlist1})
 }))
 
-router.put("/:id",validatelisting, wrapasycn(async(req,res)=>{
+router.put("/:id",isLoggedin,isowner,validatelisting, wrapasycn(async(req,res)=>{
  
    let {id}=req.params;
+   
    await lists.findByIdAndUpdate(id,{...req.body.listing});
    req.flash("success","Listing Edited successfully!");
    res.redirect(`/listings/${id}`)
@@ -97,7 +102,7 @@ router.put("/:id",validatelisting, wrapasycn(async(req,res)=>{
 
 //detele route
 
-router.delete("/:id", wrapasycn(async(req,res)=>{
+router.delete("/:id",isLoggedin,isowner, wrapasycn(async(req,res)=>{
    let {id}=req.params;
    await lists.findByIdAndDelete(id);
    req.flash("success","Listing deleted !");
