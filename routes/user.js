@@ -4,58 +4,39 @@ const User=require("../model/user");
 const wrapasync = require("../utils/wrapasync");
 const passport=require("passport");
 const {isLoggedin,saveredirectUrl}=require("../maddleware.js");
+const usercontroller=require("../controller/userdesign.js")
 
 
+router.route("/signup")
+.get(usercontroller.rendersignupform)
+.post(wrapasync(usercontroller.signupform));
+// router.get("/signup",usercontroller.rendersignupform)
 
-router.get("/signup",(req,res)=>{
-    res.render("users/signup.ejs");
-})
-
-router.post('/signup', wrapasync(async (req, res,next) => {
-    try {
-        const { username, email, password } = req.body;
-        const newUser = new User({ username, email }); // Pass an object to the constructor
-        const registeredUser = await User.register(newUser, password);
-        console.log(registeredUser);
-        req.login(registeredUser,(err)=>{
-            if(err){
-                return next(err)
-            };
-            req.flash('success', 'Welcome to Wanderlust');
-            res.redirect("/listings");
-        })
-        
-    } catch (e) {
-        req.flash('error', e.message);
-        res.redirect('/signup');
-    }
-}));
-
-    router.get("/login",async(req,res)=>{
-        res.render("users/login.ejs")
-    })
-
-router.post("/login",saveredirectUrl,
+// router.post('/signup', wrapasync(usercontroller.signupform));
+router.route("/login")
+.get(usercontroller.renderloginform)
+.post(saveredirectUrl,
     passport.authenticate('local',
          { failureRedirect: '/login',
             failureFlash:true 
         }),
-         async(req,res)=>{
-            req.flash("success","Wellcome To Wanderlust ")
-            let rediect=res.locals.redirectUrl ||  "listings";
- res.redirect(rediect);
-})
+usercontroller.login
+
+         );
+
+// router.get("/login",usercontroller.renderloginform)
+
+// router.post("/login",saveredirectUrl,
+//     passport.authenticate('local',
+//          { failureRedirect: '/login',
+//             failureFlash:true 
+//         }),
+// usercontroller.login
+
+//          )
 
 
-router.get("/logout",(req,res,next)=>{
-    req.logout((err)=>{
-        if(err){
-            return next(err);
-        }
-    });
-    req.flash("success","you are logged out!");
-    res.redirect("/listings");
-})
+router.get("/logout",usercontroller.logoutform)
 
 
 module.exports=router;

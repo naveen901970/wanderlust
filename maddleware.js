@@ -1,7 +1,8 @@
 const lists=require("./model/schema");
+const reviews=require("./model/review.js");
 const Expresserror=require("./utils/expresserrors")
-const {listingschem,reviewSchema}=require("./model/schema.js");
-
+// const {listingschem,reviewSchema}=require("./model/schema.js");
+const {listingschem,reviewSchema}=require("./schema.js");
 
 
 
@@ -54,4 +55,16 @@ module.exports.validatereview=(req,res,next)=>{
     }else{
         next()
     }
+}
+module.exports.isreviewauthor=async(req,res,next)=>{
+    let {rid,id}=req.params;
+    let review=  await  reviews.findById(rid);
+   
+   if( !review.author.equals( res.locals.curruser._id)){
+    req.flash("error","you are not the author of this review");
+    return res.redirect(`/listings/${id}`)
+
+   
+   }
+   next();
 }

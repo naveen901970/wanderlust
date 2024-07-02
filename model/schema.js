@@ -34,10 +34,11 @@ const listingschema= new Schema({
             ref: "review"
         }
     ],
-    author:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"User"
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
     }
+
     
 });
 
