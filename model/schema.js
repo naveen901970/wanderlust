@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const {Schema}=mongoose;
 const review=require("./review.js");
-const User=require("./user.js")
+const User=require("./user.js");
+const { Strategy } = require('passport-local');
 
 
 const listingschema= new Schema({
@@ -11,10 +12,12 @@ const listingschema= new Schema({
     },
     description:String,
     image:{
-        type:String,
-        default:"https://th.bing.com/th/id/OIP.mMfDbfeirUydQoXiSlgA9gAAAA?rs=1&pid=ImgDetMain",
-        set:(v)=>
-            v===""?"https://th.bing.com/th/id/OIP.mMfDbfeirUydQoXiSlgA9gAAAA?rs=1&pid=ImgDetMain":v
+        // type:String,
+        // default:"https://th.bing.com/th/id/OIP.mMfDbfeirUydQoXiSlgA9gAAAA?rs=1&pid=ImgDetMain",
+        // set:(v)=>
+        //     v===""?"https://th.bing.com/th/id/OIP.mMfDbfeirUydQoXiSlgA9gAAAA?rs=1&pid=ImgDetMain":v
+        url:String,
+        filename:String,
         },
         price:{
             type:Number

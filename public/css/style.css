@@ -87,3 +87,7 @@ font-size: 1.5rem;
 .btns{
     display: flex;
 }
+/* map */
+
+#map { height: 400px;
+width: 80vh; }

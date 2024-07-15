@@ -1,6 +1,11 @@
 const lists=require("../model/schema.js");
+const mbxGeocoding = require('@mapbox/mapbox-sdk/services/tilesets');
+const maptoken=process.env.MAP_TOKEN;
+const geocodingClient = mbxGeocoding({ accessToken: maptoken });
 
+// const mbxgeocoding = require('@mapbox/mapbox-sdk/services/tilesets');
 
+// // const geocodingClient = mbxgeocoding({ accessToken:maptoken });
 
 module.exports.index=async(req,res)=>{
     let newlist= await lists.find();
@@ -29,11 +34,23 @@ module.exports.showroutedeatils=async(req,res)=>{
     res.render("./listing/show.ejs",{newlist1});
 }
 module.exports.creatingdatato_mainpage=async(req,res,next)=>{
+  let response= await geocodingClient
+  .forwardGeocode({
+        query: 'New Delhi, India',
+        limit: 1,
+      })
+    .send()
+       console.log(response.body) ;
+       send.send("done!")
+    let url=req.file.path;
+    let filename=req.file.filename;
+
     if(!req.body.listing){
        throw new Expresserror(400,"send  a valid data  for listing")
     }
-   let newlisting= new lists(req.body.listing);
-   newlisting.owner=req.user._id;
+        let newlisting= new lists(req.body.listing);
+        newlisting.owner=req.user._id;
+        newlisting.image={url ,filename }
       await newlisting.save();
       req.flash("success","New list created!");
    
@@ -48,15 +65,22 @@ module.exports.rendereditroute=async (req,res)=>{
      req.flash("error","listing you reqested for does not exit!");
      res.redirect("/listings");
  }
-    res.render("./listing/edit.ejs",{newlist1})
+
+ let originalimage=newlist1.image.url;
+ let originalimageurl=originalimage.replace("/upload","/upload/h_300,w_250")
+    res.render("./listing/edit.ejs",{newlist1,originalimageurl})
  }
 
 
  module.exports.afteredited=async(req,res)=>{
- 
     let {id}=req.params;
-    
-    await lists.findByIdAndUpdate(id,{...req.body.listing});
+    let listing=await lists.findByIdAndUpdate(id,{...req.body.listing});
+    if(typeof req.file!=="undefined"){
+        let url=req.file.path;
+    let filename=req.file.filename;
+    listing.image={url ,filename }
+     await listing.save()
+    }
     req.flash("success","Listing Edited successfully!");
     res.redirect(`/listings/${id}`)
  

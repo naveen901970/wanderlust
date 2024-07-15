@@ -8,7 +8,9 @@ const listingcontroller=require("../controller/listingsdesign.js")
 
 const {isLoggedin,redirectUrl,isowner, validatelisting}=require("../maddleware.js");
 const Route = require("express/lib/router/route.js");
-
+const multer  = require('multer');
+const {storage}=require("../cloudconfig.js")
+const upload = multer({ storage })
 
 
 
@@ -30,17 +32,21 @@ router
 .route("/")
 .get(  wrapasycn(listingcontroller.index))
 .post(isLoggedin,
-    validatelisting,
+  
+     upload.single("listing[image]"),
+     validatelisting,
      wrapasycn(listingcontroller.creatingdatato_mainpage));
-
-
+// .post(upload.single("listing[image]"),(req,res)=>{
+//     res.send(req.file);
+// })
+ 
 
 router.get("/new", isLoggedin,listingcontroller.createroute)
 
 router
 .route("/:id")
 .get( wrapasycn(listingcontroller.showroutedeatils))
-.put(isLoggedin,isowner,validatelisting, wrapasycn(listingcontroller.afteredited))
+.put(isLoggedin,isowner ,upload.single("listing[image]"),validatelisting, wrapasycn(listingcontroller.afteredited))
 .delete(isLoggedin,isowner, wrapasycn(listingcontroller.deleteroute));
 
 
