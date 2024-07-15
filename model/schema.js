@@ -3,6 +3,7 @@ const {Schema}=mongoose;
 const review=require("./review.js");
 const User=require("./user.js");
 const { Strategy } = require('passport-local');
+const { required } = require('joi');
 
 
 const listingschema= new Schema({
@@ -40,9 +41,18 @@ const listingschema= new Schema({
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
-    }
-
-    
+    },
+   geometry:{
+    type: {
+        type: String, // Don't do `{ location: { type: String } }`
+        enum: ['Point'], // 'location.type' must be 'Point'
+        required: true
+      },
+      coordinates: {
+        type: [Number],
+        required: true
+      }
+   }
 });
 
 

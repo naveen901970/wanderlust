@@ -1,5 +1,5 @@
 const lists=require("../model/schema.js");
-const mbxGeocoding = require('@mapbox/mapbox-sdk/services/tilesets');
+const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const maptoken=process.env.MAP_TOKEN;
 const geocodingClient = mbxGeocoding({ accessToken: maptoken });
 
@@ -36,12 +36,12 @@ module.exports.showroutedeatils=async(req,res)=>{
 module.exports.creatingdatato_mainpage=async(req,res,next)=>{
   let response= await geocodingClient
   .forwardGeocode({
-        query: 'New Delhi, India',
+        query: req.body.listing.location,
         limit: 1,
       })
     .send()
-       console.log(response.body) ;
-       send.send("done!")
+       
+     
     let url=req.file.path;
     let filename=req.file.filename;
 
@@ -51,7 +51,9 @@ module.exports.creatingdatato_mainpage=async(req,res,next)=>{
         let newlisting= new lists(req.body.listing);
         newlisting.owner=req.user._id;
         newlisting.image={url ,filename }
-      await newlisting.save();
+        newlisting.geometry= response.body.features[0].geometry
+        let savelisting=await newlisting.save();
+        console.log(savelisting)
       req.flash("success","New list created!");
    
       res.redirect("./listings")
