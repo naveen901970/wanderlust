@@ -21,11 +21,13 @@ const Expresserror=require("./utils/expresserrors")
 // const {listingschem,reviewSchema}=require("./schema.js");
 // const review=require("./model/review.js");
 var session = require('express-session');
+const MongoStore = require('connect-mongo');
 const flash=require('connect-flash');
 
 const listingsRouter=require("./routes/listing.js");
 const reviewsRouter=require("./routes/reviews.js");
 const userRouter=require("./routes/user.js");
+const { error, clear } = require('console');
 // ------------------------------------------------------------------------------------
 //=====PATH AND CONNECTION SETUP====
 app.set("view engine","ejs");
@@ -34,18 +36,34 @@ app.use(express.urlencoded({extended:true}));
 app.engine('ejs', ejsMeta);
 app.use(express.static(path.join(__dirname,"public")))
 
+
+const dburl=process.env.ATLASDB_URL
+// const mogodb='mongodb://127.0.0.1:27017/airbin'
 main().then((res)=>{
     console.log("connection is sucsses")
 }).catch((err)=>{
     console.log(err)
 })
 async function main() {
-  await mongoose.connect('mongodb://127.0.0.1:27017/airbin');
+  await mongoose.connect(dburl);
  
 }
 //=====SESSIONS======
+const store=MongoStore.create({
+    mongoUrl:dburl,
+    crypto:{
+        secret:process.env.SECRET
+    },
+    touchAfter:24*3600,
+})
+
+store.on("error",()=>{
+    console.log("ERROR in mongo session store:",err)
+})
+
 const sessionOptions={
-    secret:"mysupersecretcode",
+    store,
+    secret:process.env.SECRET,
   resave :false,
   saveUninitialized:true,
   cookie:  {
